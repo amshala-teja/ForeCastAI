@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'
 import Papa from 'papaparse'
+import GoogleMap from './GoogleMap'
 
 const HomePage = () => {
   // Form state
@@ -145,6 +146,10 @@ const HomePage = () => {
               required
             />
           </div>
+          <GoogleMap 
+            latitude={formData.latitude} 
+            longitude={formData.longitude} 
+          />
 
 
           <div className="divider">Options</div>
@@ -214,7 +219,7 @@ const HomePage = () => {
               type="text" 
               name="author"
               value={solarData.azimuthAngle}
-              onChange={handleInputChange}
+              onChange={handleSolarDataChange}
               placeholder="Enter here..." 
               className="input input-bordered w-full" 
               required
@@ -228,7 +233,7 @@ const HomePage = () => {
               type="text" 
               name="author"
               value={solarData.inverterEfficiency}
-              onChange={handleInputChange}
+              onChange={handleSolarDataChange}
               placeholder="Enter here..." 
               className="input input-bordered w-full" 
               required
@@ -242,7 +247,7 @@ const HomePage = () => {
               type="text" 
               name="author"
               value={solarData.losses}
-              onChange={handleInputChange}
+              onChange={handleSolarDataChange}
               placeholder="Enter here..." 
               className="input input-bordered w-full" 
               required
@@ -256,7 +261,7 @@ const HomePage = () => {
               type="text" 
               name="author"
               value={solarData.arrayTpe}
-              onChange={handleInputChange}
+              onChange={handleSolarDataChange}
               placeholder="Enter here..." 
               className="input input-bordered w-full" 
               required
@@ -270,7 +275,7 @@ const HomePage = () => {
               type="text" 
               name="author"
               value={solarData.gcr}
-              onChange={handleInputChange}
+              onChange={handleSolarDataChange}
               placeholder="Enter here..." 
               className="input input-bordered w-full" 
               required
@@ -284,7 +289,7 @@ const HomePage = () => {
               type="text" 
               name="author"
               value={solarData.adjustConstant}
-              onChange={handleInputChange}
+              onChange={handleSolarDataChange}
               placeholder="Enter here..." 
               className="input input-bordered w-full" 
               required
