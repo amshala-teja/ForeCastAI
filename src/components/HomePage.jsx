@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react'
 import Papa from 'papaparse'
 import GoogleMap from './GoogleMap'
+import SubmitButton from "./SubmitButton.jsx";
+import axios from "axios";
 
 const HomePage = () => {
   // Form state
@@ -95,28 +97,52 @@ const HomePage = () => {
   }
 
   // Submit handler
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    
-    // Compile all form data
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const submissionData = {
-      projectDetails: formData,
+      latitude: parseFloat(formData.latitude),
+      longitude: parseFloat(formData.longitude),
       options,
       solarData: options.solar ? solarData : null,
-      csvData: parsedCsvData
+      csvData: parsedCsvData,
+    };
+
+
+    try {
+      const response = await axios.post(
+          'http://127.0.0.1:8000/solarclient/generate-prediction/',
+          submissionData,
+          { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      console.log('Server Response:', response.data);
+      alert('Data successfully submitted!');
+    } catch (error) {
+      console.error('Error:', error.response ? error.response.data : error);
+      alert('Submission failed!');
     }
 
-    console.log('Submission Data:', submissionData)
-    // Add your submission logic here
-  }
+  };
+
+  //   // Compile all form data
+  //   const submissionData = {
+  //     projectDetails: formData,
+  //     options,
+  //     solarData: options.solar ? solarData : null,
+  //     csvData: parsedCsvData,
+  //   };
+  //   console.log('Submission Data:', submissionData);
+  //   // Add your submission logic here...
+  // };
+
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-base-200 p-4">
-      <div className="card w-full max-w-screen-lg bg-base-100 shadow-xl">
-        <form onSubmit={handleSubmit} className="card-body overflow-y-auto max-h-[600px]">
-          <h2 className="card-title mb-4">Project Details</h2>
-          
+      <div className="flex justify-center items-center min-h-screen bg-base-200 p-4">
+        <div className="card w-full max-w-screen-lg bg-base-100 shadow-xl">
+          <form onSubmit={handleSubmit} className="card-body overflow-y-auto max-h-[600px]">
+            <h2 className="card-title mb-4">Project Details</h2>
           {/* Basic Project Details */}
+          {/*  Latitude Input*/}
           <div className="form-control w-full">
             <label className="label">
               <span className="label-text">Latitude</span>
@@ -131,7 +157,7 @@ const HomePage = () => {
               required
             />
           </div>
-
+          {/*Longitude Input*/}
           <div className="form-control w-full">
             <label className="label">
               <span className="label-text">Longitude</span>
@@ -397,14 +423,13 @@ const HomePage = () => {
           )}
 
           {/* Submit Button */}
-          <div className="card-actions justify-end mt-4">
-            <button 
-              type="submit" 
-              className="btn btn-success btn-sm"
-            >
-              Submit
-            </button>
+          <div className="mt-4">
+            <SubmitButton
+                label="Submit"
+                className="btn btn-primary w-full"
+            />
           </div>
+
         </form>
       </div>
     </div>
