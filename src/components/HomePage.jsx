@@ -39,9 +39,9 @@ const HomePage = () => {
   // File upload state
   const [selectedFile, setSelectedFile] = useState(null);
   const [parsedCsvData, setParsedCsvData] = useState(null);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [serverData, setServerData] = useState(null);
+  // const [serverData, setServerData] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
   const [error, setError] = useState(null);
 
@@ -49,13 +49,13 @@ const HomePage = () => {
   const fileInputRef = useRef(null)
 
   // Handle input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     [name]: value
+  //   }))
+  // }
 
   // Handle checkbox changes
   const handleCheckboxChange = (e) => {
@@ -118,7 +118,7 @@ const HomePage = () => {
     };
 
     setIsLoading(true);       // explicitly START loading here (as soon as submit begins)
-    setServerData(null);
+    // setServerData(null);
     setImageSrc(null);
 
     try {
@@ -128,7 +128,7 @@ const HomePage = () => {
           { headers: { 'Content-Type': 'application/json' } }
       );
       console.log('Server Response:', response.data);
-      const imageKey = response.data.image_key;
+      // const imageKey = response.data.image_key;
       // navigate(`/view-plot/${encodeURIComponent(imageKey)}`);
       const imageResponse = await axios.get(
           `http://127.0.0.1:8000/solarclient/image/?image_key=${encodeURIComponent(response.data.image_key)}`,
