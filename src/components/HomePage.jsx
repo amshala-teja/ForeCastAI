@@ -3,6 +3,8 @@ import Papa from 'papaparse'
 import GoogleMap from './GoogleMap'
 import SubmitButton from "./SubmitButton.jsx";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import ViewPlot from "./ViewPlot.jsx";
 
 const HomePage = () => {
   // Form state
@@ -10,6 +12,7 @@ const HomePage = () => {
     latitude: '',
     longitude: ''
   })
+
 
   // Checkbox states
   const [options, setOptions] = useState({
@@ -34,8 +37,15 @@ const HomePage = () => {
   })
 
   // File upload state
-  const [selectedFile, setSelectedFile] = useState(null)
-  const [parsedCsvData, setParsedCsvData] = useState(null)
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [parsedCsvData, setParsedCsvData] = useState(null);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [serverData, setServerData] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [error, setError] = useState(null);
+
+
   const fileInputRef = useRef(null)
 
   // Handle input changes
@@ -107,6 +117,9 @@ const HomePage = () => {
       csvData: parsedCsvData,
     };
 
+    setIsLoading(true);       // explicitly START loading here (as soon as submit begins)
+    setServerData(null);
+    setImageSrc(null);
 
     try {
       const response = await axios.post(
@@ -114,14 +127,31 @@ const HomePage = () => {
           submissionData,
           { headers: { 'Content-Type': 'application/json' } }
       );
-
       console.log('Server Response:', response.data);
-      alert('Data successfully submitted!');
-    } catch (error) {
-      console.error('Error:', error.response ? error.response.data : error);
-      alert('Submission failed!');
-    }
+      const imageKey = response.data.image_key;
+      // navigate(`/view-plot/${encodeURIComponent(imageKey)}`);
+      const imageResponse = await axios.get(
+          `http://127.0.0.1:8000/solarclient/image/?image_key=${encodeURIComponent(response.data.image_key)}`,
+          { responseType: 'blob' }
+      );
+      const imageURL = URL.createObjectURL(imageResponse.data);
+      setImageSrc(imageURL);
+      // setServerData(response.data);
+      //
+      // // Once POST finishes, fetch the image from backend using provided image_key clearly
 
+      //
+      // // convert to blob to URL explicitly
+
+      //
+      //
+      // // alert('Data successfully submitted!');
+    } catch (error) {
+      console.error('Error during POST:', error);
+      setError('An error occurred while generating the prediction.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   //   // Compile all form data
@@ -151,7 +181,7 @@ const HomePage = () => {
               type="text" 
               name="latitude"
               value={formData.latitude}
-              onChange={handleInputChange}
+              onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
               placeholder="Enter here..." 
               className="input input-bordered w-full" 
               required
@@ -166,7 +196,7 @@ const HomePage = () => {
               type="text" 
               name="longitude"
               value={formData.longitude}
-              onChange={handleInputChange}
+              onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
               placeholder="Enter here..." 
               className="input input-bordered w-full" 
               required
@@ -424,14 +454,73 @@ const HomePage = () => {
 
           {/* Submit Button */}
           <div className="mt-4">
-            <SubmitButton
+
+            {!imageSrc ? (
+                <SubmitButton
                 label="Submit"
                 className="btn btn-primary w-full"
             />
+            ):(
+                <button
+                    onClick={() => {
+                      setImageSrc(null);
+                      setIsLoading(false);
+                    }}
+                    className="btn btn-secondary w-full"> Reset </button>
+            )}
           </div>
 
         </form>
-      </div>
+          {/* Explicitly render loading just once, clearly at the top */}
+          {isLoading && (
+              <div>
+
+            <div aria-label="status" className="status status-xs"></div>
+            <div aria-label="status" className="status status-sm"></div>
+            <div aria-label="status" className="status status-md"></div>
+            <div aria-label="status" className="status status-lg"></div>
+            <div aria-label="status" className="status status-xl"></div> Generating the Solar Power Prediction Plot...</div>
+          )}
+          {/* Explicit error handler */}
+          {error && <div className="text-red-500 my-4 text-center">{error}</div>}
+          {/* Explicitly display ViewPlot after fetching the image */}
+          {!isLoading && imageSrc && (
+              <div className="my-6">
+                <ViewPlot imageSrc={imageSrc} />
+              </div>
+          )}
+
+
+
+          {/*/!* Your normal data display once loaded explicitly *!/*/}
+          {/*{!isLoading && serverData && (*/}
+          {/*    <>*/}
+          {/*      /!*<div>*!/*/}
+          {/*      /!*  <h3>Prediction Data:</h3>*!/*/}
+          {/*      /!*  <div><strong>Latitude:</strong> {serverData.serializer_data.latitude}</div>*!/*/}
+          {/*      /!*  <div><strong>Longitude:</strong> {serverData.serializer_data.longitude}</div>*!/*/}
+
+          {/*      /!*  <h4>Metrics:</h4>*!/*/}
+          {/*      /!*  <pre>{JSON.stringify(serverData.metrics, null, 2)}</pre>*!/*/}
+
+          {/*      /!*  <h4>Predictions:</h4>*!/*/}
+          {/*      /!*  <pre>{JSON.stringify(serverData.predictions, null, 2)}</pre>*!/*/}
+
+          {/*      /!*  <h4>Actual Test Data (y_test):</h4>*!/*/}
+          {/*      /!*  <pre>{JSON.stringify(serverData.y_test, null, 2)}</pre>*!/*/}
+
+          {/*      /!*  <h4>Hours:</h4>*!/*/}
+          {/*      /!*  <pre>{JSON.stringify(serverData.hours, null, 2)}</pre>*!/*/}
+          {/*      /!*</div>*!/*/}
+
+          {/*      <div>*/}
+          {/*        <h4>Prediction Image:</h4>*/}
+          {/*        {imageSrc && <img src={imageSrc} alt="Solar Prediction Result"/>}*/}
+          {/*      </div>*/}
+          {/*    </>*/}
+          {/*)}*/}
+
+        </div>
     </div>
   )
 }
