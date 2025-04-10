@@ -28,7 +28,7 @@ const HomePage = () => {
     size: '',
     systemRatio: '',
     gcr: '',
-    arrayTpe:'',
+    arrayType:'',
     losses: '',
     inverterEfficiency:'',
     azimuthAngle: '',
@@ -273,7 +273,7 @@ const HomePage = () => {
             </label>
             <input 
               type="text" 
-              name="author"
+              name="azimuthAngle"
               value={solarData.azimuthAngle}
               onChange={handleSolarDataChange}
               placeholder="Enter here..." 
@@ -287,7 +287,7 @@ const HomePage = () => {
             </label>
             <input 
               type="text" 
-              name="author"
+              name="inverterEfficiency"
               value={solarData.inverterEfficiency}
               onChange={handleSolarDataChange}
               placeholder="Enter here..." 
@@ -301,7 +301,7 @@ const HomePage = () => {
             </label>
             <input 
               type="text" 
-              name="author"
+              name="losses"
               value={solarData.losses}
               onChange={handleSolarDataChange}
               placeholder="Enter here..." 
@@ -315,8 +315,8 @@ const HomePage = () => {
             </label>
             <input 
               type="text" 
-              name="author"
-              value={solarData.arrayTpe}
+              name="arrayType"
+              value={solarData.arrayType}
               onChange={handleSolarDataChange}
               placeholder="Enter here..." 
               className="input input-bordered w-full" 
@@ -329,7 +329,7 @@ const HomePage = () => {
             </label>
             <input 
               type="text" 
-              name="author"
+              name="gcr"
               value={solarData.gcr}
               onChange={handleSolarDataChange}
               placeholder="Enter here..." 
@@ -343,7 +343,7 @@ const HomePage = () => {
             </label>
             <input 
               type="text" 
-              name="author"
+              name="adjustConstant"
               value={solarData.adjustConstant}
               onChange={handleSolarDataChange}
               placeholder="Enter here..." 
